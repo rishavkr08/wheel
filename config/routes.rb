@@ -40,6 +40,7 @@ Rails.application.routes.draw do
           post 'bulk_delete'
         end
       end
+      resources :tasks, only: [:index]
     end
   end
 
