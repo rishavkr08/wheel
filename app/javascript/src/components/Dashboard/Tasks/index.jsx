@@ -10,6 +10,7 @@ import { Toastr } from "neetoui";
 import AccountDropdown from "components/Common/Navbar/AccountDropdown";
 import tasksApi from "apis/tasks";
 import TaskTable from "./TaskTable";
+import DeleteAlert from "./DeleteAlert";
 
 const Tasks = () => {
   const authDispatch = useAuthDispatch();
@@ -31,6 +32,8 @@ const Tasks = () => {
   const [currentPage, setCurrentPage] = useState(1);
   // const [soryBy, setSortBy] = useState("");
   const [selectedTaskIds, setSelectedTaskIds] = useState([]);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchTasks();
@@ -45,6 +48,19 @@ const Tasks = () => {
       logger.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setDeleting(true);
+      await tasksApi.destroy({ ids: selectedTaskIds });
+      setShowDeleteAlert(false);
+      fetchTasks();
+    } catch (error) {
+      logger.error(error);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -91,6 +107,10 @@ const Tasks = () => {
               ],
               onClick: () => null,
             }}
+            deleteButtonProps={{
+              disabled: !selectedTaskIds.length,
+              onClick: () => setShowDeleteAlert(true),
+            }}
             toggleFilter
           />
           <TaskTable
@@ -100,6 +120,7 @@ const Tasks = () => {
               (currentPage - 1) * perPage,
               (currentPage - 1) * perPage + perPage
             )}
+            refetch={fetchTasks}
           />
         </>
       ) : (
@@ -109,6 +130,13 @@ const Tasks = () => {
           subtitle="Add your task to send customized emails to them."
           // primaryAction={() => setShowNewTaskPane(true)}
           primaryActionLabel="Add new task"
+        />
+      )}
+      {showDeleteAlert && (
+        <DeleteAlert
+          handleClose={() => setShowDeleteAlert(false)}
+          handleDelete={handleDelete}
+          deleting={deleting}
         />
       )}
     </React.Fragment>

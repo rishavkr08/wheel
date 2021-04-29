@@ -1,12 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import { Checkbox, Badge, Button, Tooltip } from "neetoui";
 import { limitString, formatDate } from "components/Common/formatter";
+import DeleteAlert from "./DeleteAlert";
+import tasksApi from "apis/tasks";
 
-const TaskTable = ({ tasks = [], selectedTaskIds, setSelectedTaskIds }) => {
+const TaskTable = ({
+  tasks = [],
+  selectedTaskIds,
+  setSelectedTaskIds,
+  refetch,
+}) => {
   const badgeType = {
     new: "blue",
     open: "green",
     spam: "red",
+  };
+
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState("");
+
+  const deleteTask = async () => {
+    try {
+      setDeleting(true);
+      await tasksApi.destroy({ ids: [selectedTaskId] });
+      setShowDeleteAlert(false);
+      refetch();
+    } catch (error) {
+      logger.error(error);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleTaskDelete = taskId => {
+    setSelectedTaskId(taskId);
+    setShowDeleteAlert(true);
   };
 
   return (
@@ -84,7 +113,11 @@ const TaskTable = ({ tasks = [], selectedTaskIds, setSelectedTaskIds }) => {
                     <Button style="icon" icon="ri-pencil-line" />
                   </Tooltip>
                   <Tooltip content={"Delete"} position="bottom">
-                    <Button style="icon" icon="ri-delete-bin-line" />
+                    <Button
+                      style="icon"
+                      icon="ri-delete-bin-line"
+                      onClick={() => handleTaskDelete(task.id)}
+                    />
                   </Tooltip>
                 </span>
               </td>
@@ -92,6 +125,14 @@ const TaskTable = ({ tasks = [], selectedTaskIds, setSelectedTaskIds }) => {
           ))}
         </tbody>
       </table>
+      {showDeleteAlert && (
+        <DeleteAlert
+          handleClose={() => setShowDeleteAlert(false)}
+          refetch={refetch}
+          handleDelete={deleteTask}
+          deleting={deleting}
+        />
+      )}
     </div>
   );
 };
