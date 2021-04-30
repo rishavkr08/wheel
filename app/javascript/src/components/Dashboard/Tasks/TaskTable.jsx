@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Checkbox, Badge, Button, Tooltip } from "neetoui";
-import { limitString, formatDate } from "components/Common/formatter";
+import {
+  limitString,
+  formatDate,
+  capitalize,
+} from "components/Common/formatter";
 import DeleteAlert from "./DeleteAlert";
 import tasksApi from "apis/tasks";
 
@@ -94,18 +98,18 @@ const TaskTable = ({
                 {task.title}
               </td>
               <td className="text-gray-900">
-                {limitString(task.description, 30)}
+                {limitString(task.description, 40)}
               </td>
               <td className="text-gray-900 text-center">
-                <Badge color={badgeType[task.state.toLowerCase()]}>
-                  {task.state}
+                <Badge color={badgeType[task.state]}>
+                  {capitalize(task.state)}
                 </Badge>
               </td>
               <td className="text-gray-900 text-center">
                 {formatDate(task.created_at)}
               </td>
               <td className="text-gray-900 text-center">
-                {formatDate(task.due_date)}
+                {task.due_date ? formatDate(task.due_date) : "---"}
               </td>
               <td>
                 <span className="flex space-x-4">
