@@ -73,13 +73,7 @@ const NewTaskForm = ({ onClose, refetch }) => {
             options={formattedTaskStatuses}
             className="mb-3"
           />
-          <Input
-            label="Due Date"
-            name="dueDate"
-            type="date"
-            field={{ type: "date" }}
-            className="mb-3"
-          />
+          <Input label="Due Date" name="dueDate" type="date" className="mb-3" />
           <Textarea
             label="Task Description"
             name="description"
