@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { PageHeading, SubHeader } from "neetoui/layouts";
-import { PageLoader } from "neetoui";
+import { PageLoader, Button } from "neetoui";
 import EmptyState from "components/Common/EmptyState";
 import EmptyNotesListImage from "images/EmptyNotesList";
 import { useAuthDispatch } from "contexts/auth";
 import authenticationApi from "apis/authentication";
 import { resetAuthTokens } from "apis/axios";
-import { Toastr } from "neetoui";
 import AccountDropdown from "components/Common/Navbar/AccountDropdown";
 import tasksApi from "apis/tasks";
 import TaskTable from "./TaskTable";
 import DeleteAlert from "./DeleteAlert";
+import NewTaskDrawer from "./NewTaskDrawer";
 
 const Tasks = () => {
   const authDispatch = useAuthDispatch();
@@ -21,16 +21,15 @@ const Tasks = () => {
       resetAuthTokens();
       window.location.href = "/";
     } catch (error) {
-      Toastr.error(error);
+      logger.error(error);
     }
   };
   const perPage = 10;
   const [loading, setLoading] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  // const [showNewTaskPane, setShowNewTaskPane] = useState(false);
+  const [showNewTaskDrawer, setShowNewTaskDrawer] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  // const [soryBy, setSortBy] = useState("");
   const [selectedTaskIds, setSelectedTaskIds] = useState([]);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -74,13 +73,14 @@ const Tasks = () => {
         title="Tasks"
         rightButton={() => (
           <>
-            <AccountDropdown handleLogout={handleLogout} />
-
-            {/* <Button
-              onClick={() => setShowNewTaskPane(true)}
+            <div className="mx-4">
+              <AccountDropdown handleLogout={handleLogout} />
+            </div>
+            <Button
+              onClick={() => setShowNewTaskDrawer(true)}
               label="Add new task"
               icon="ri-add-line"
-            /> */}
+            />
           </>
         )}
       />
@@ -128,7 +128,7 @@ const Tasks = () => {
           image={EmptyNotesListImage}
           title="Looks like you don't have any task!"
           subtitle="Add your task to send customized emails to them."
-          // primaryAction={() => setShowNewTaskPane(true)}
+          primaryAction={() => setShowNewTaskDrawer(true)}
           primaryActionLabel="Add new task"
         />
       )}
@@ -139,6 +139,11 @@ const Tasks = () => {
           deleting={deleting}
         />
       )}
+      <NewTaskDrawer
+        showDrawer={showNewTaskDrawer}
+        handleShowDrawer={setShowNewTaskDrawer}
+        refetch={fetchTasks}
+      />
     </React.Fragment>
   );
 };
