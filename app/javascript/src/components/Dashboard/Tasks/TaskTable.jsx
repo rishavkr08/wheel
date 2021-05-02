@@ -44,7 +44,7 @@ const TaskTable = ({
 
   return (
     <div className="mx-24">
-      <table className="nui-table nui-table--checkbox">
+      <table className="nui-table nui-table--checkbox nui-table--actions">
         <thead>
           <tr>
             <th>
